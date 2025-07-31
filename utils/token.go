@@ -14,6 +14,10 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
+type JWTClaim struct {
+	UserID string `json:"user_id"`
+	jwt.RegisteredClaims
+}
 func GenerateToken(userID, orgID string) (string, error) {
 	expiration := time.Now().Add(24 * time.Hour)
 	claims := &Claims{

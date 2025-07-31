@@ -1,38 +1,40 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-type Config struct {
-	Port        string
+type EnvConfig struct {
 	DatabaseURL string
 	JWTSecret   string
-	EmailFrom   string
-	EmailProvider string
 }
 
-func LoadConfig() Config {
+var Env EnvConfig
+
+func LoadEnv() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("Warning: .env file not found, relying on environment vars.")
+		log.Println("No .env file found, using system env")
 	}
 
-	return Config{
-		Port:        getEnv("PORT", "8080"),
-		DatabaseURL: getEnv("DATABASE_URL", ""),
-		JWTSecret:   getEnv("JWT_SECRET", ""),
-		EmailFrom:   getEnv("EMAIL_FROM", ""),
-		EmailProvider: getEnv("EMAIL_PROVIDER", "resend"),
+	Env = EnvConfig{
+		DatabaseURL: os.Getenv("DATABASE_URL"),
+		JWTSecret:   os.Getenv("JWT_SECRET"),
 	}
 }
 
-func getEnv(key, fallback string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
+func ConnectDatabase() *gorm.DB {
+	db, err := gorm.Open(postgres.Open(Env.DatabaseURL), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to connect to database: ", err)
 	}
-	return fallback
+
+	fmt.Println("✅ Connected to DB")
+	return db
 }

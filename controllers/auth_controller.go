@@ -46,7 +46,7 @@ func Signup(c *gin.Context) {
 		PasswordHash: hashedPassword,
 		OrgID:        org.ID,
 		IsVerified:   false,
-		IsSuperAdmin: false,
+		IsAdmin: false,
 	}
 
 	if err := models.DB.Create(&user).Error; err != nil {
