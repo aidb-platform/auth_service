@@ -1,26 +1,24 @@
 package main
 
 import (
-	"log"
-
-	"aidb-auth-service/config"
-	"aidb-auth-service/models"
-	"aidb-auth-service/routes"
-
+	"github.com/aidb-platform/auth_service/config"
+	"github.com/aidb-platform/auth_service/middleware"
+	"github.com/aidb-platform/auth_service/routes"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	cfg := config.LoadConfig()
-
-	models.ConnectDatabase(cfg.DatabaseURL)
-	models.DB.AutoMigrate(&models.User{}, &models.Organization{})
+	config.LoadEnv()
+	db := config.ConnectDatabase()
 
 	r := gin.Default()
-	routes.Setup(r)
 
-	log.Printf("Starting server on port %s...", cfg.Port)
-	if err := r.Run(":" + cfg.Port); err != nil {
-		log.Fatal("Failed to run server:", err)
-	}
+	r.POST("/signup", routes.SignUp(db))
+	r.POST("/login", routes.Login(db))
+
+	protected := r.Group("/api")
+	protected.Use(middleware.AuthMiddleware())
+	protected.GET("/me", routes.CurrentUser(db))
+
+	r.Run(":8080")
 }

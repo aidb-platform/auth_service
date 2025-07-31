@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"aidb-auth-service/controllers"
+	"github.com/aidb-platform/auth_service/controllers"
 
 	"github.com/gin-gonic/gin"
 )

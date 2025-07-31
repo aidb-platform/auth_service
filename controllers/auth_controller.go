@@ -3,8 +3,8 @@ package controllers
 import (
 	"net/http"
 
-	"aidb-auth-service/models"
-	"aidb-auth-service/utils"
+	"github.com/aidb-platform/auth_service/models"
+	"github.com/aidb-platform/auth_service/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
